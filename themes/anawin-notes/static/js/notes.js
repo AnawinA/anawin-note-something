@@ -290,9 +290,9 @@
                     vb = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
                     return state.asc ? va - vb : vb - va;
                 } else {
-                    // 'created' (default)
-                    va = new Date(a.dataset.date || 0).getTime();
-                    vb = new Date(b.dataset.date || 0).getTime();
+                    // 'created' (default) – trim leading space that Hugo may inject
+                    va = new Date((a.dataset.date || '').trim()).getTime() || 0;
+                    vb = new Date((b.dataset.date || '').trim()).getTime() || 0;
                     return state.asc ? va - vb : vb - va;
                 }
                 if (va < vb) return state.asc ? -1 : 1;
@@ -353,9 +353,11 @@
                     key = (card.dataset.title || '?')[0].toUpperCase();
                     if (!/[A-Z]/.test(key)) key = '#';
                 } else {
-                    // Date-based grouping
-                    const d = new Date(card.dataset.date || 0);
-                    key = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    // Date-based grouping – trim leading space before parsing
+                    const d = new Date((card.dataset.date || '').trim());
+                    key = isNaN(d.getTime())
+                        ? 'No Date'
+                        : d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 }
                 if (!groups[key]) groups[key] = [];
                 groups[key].push(card);
