@@ -42,8 +42,8 @@
                         <span>Tags</span>
                     </a>
                 </li>
-                {{/* Drafts – only visible in dev mode (hugo server) */}}
-                {{ if .Site.IsServer }}
+                {{/* Drafts – only visible in dev mode (hugo server). Requires Hugo ≥ 0.120 */}}
+                {{ if hugo.IsServer }}
                 <li class="drafts-item">
                     <a href="/drafts/" aria-label="Drafts">
                         <span class="nav-icon">✏️</span>
