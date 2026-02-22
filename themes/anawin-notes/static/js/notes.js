@@ -272,6 +272,17 @@
             });
         }
 
+        // --- Shared helper: get watched timestamp (ms) for a card, or null ---
+        function getWatchedMs(card) {
+            const hist = window.AnawinHistory?.getHistory() || [];
+            const cardUrl = (card.dataset.url || '').replace(/\/$/, '');
+            const entry = hist.find(h => {
+                const hu = (h.url || '').replace(/\/$/, '');
+                return cardUrl === hu || cardUrl.endsWith(hu) || hu.endsWith(cardUrl);
+            });
+            return entry ? new Date(entry.visitedAt).getTime() : null;
+        }
+
         function sortCards(cards) {
             const sorted = [...cards];
             sorted.sort((a, b) => {
@@ -280,17 +291,19 @@
                     va = (a.dataset.title || '').toLowerCase();
                     vb = (b.dataset.title || '').toLowerCase();
                 } else if (state.sort === 'watched') {
-                    // Watched date from localStorage history
-                    const hist = window.AnawinHistory?.getHistory() || [];
-                    const idx = url => hist.findIndex(h => url.endsWith(h.url.replace(/\/$/, '')));
-                    const ai = idx(a.dataset.url || '');
-                    const bi = idx(b.dataset.url || '');
-                    // Not in history = rank last
-                    va = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
-                    vb = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
-                    return state.asc ? va - vb : vb - va;
+                    const aMs = getWatchedMs(a);
+                    const bMs = getWatchedMs(b);
+                    // Both watched → sort by visitedAt timestamp
+                    if (aMs !== null && bMs !== null) return state.asc ? aMs - bMs : bMs - aMs;
+                    // One watched → watched card ranked higher (closer to top)
+                    if (aMs !== null) return state.asc ? 1 : -1;
+                    if (bMs !== null) return state.asc ? -1 : 1;
+                    // Both unwatched → alphabetical A-Z
+                    const na = (a.dataset.title || '').toLowerCase();
+                    const nb = (b.dataset.title || '').toLowerCase();
+                    return na < nb ? -1 : na > nb ? 1 : 0;
                 } else {
-                    // 'created' (default) – trim leading space that Hugo may inject
+                    // 'created' (default) – trim leading space Hugo may inject
                     va = new Date((a.dataset.date || '').trim()).getTime() || 0;
                     vb = new Date((b.dataset.date || '').trim()).getTime() || 0;
                     return state.asc ? va - vb : vb - va;
@@ -302,11 +315,44 @@
             return sorted;
         }
 
+        // Update .note-card-date text: show "Visited …" in accent when watched sort,
+        // or restore original created-date otherwise.
+        function updateCardDates() {
+            allCards.forEach(card => {
+                const dateEl = card.querySelector('.note-card-date');
+                if (!dateEl) return;
+                // Stash original text once
+                if (!card.dataset.origDateText) {
+                    card.dataset.origDateText = dateEl.textContent.trim();
+                }
+                if (state.sort === 'watched') {
+                    const ms = getWatchedMs(card);
+                    if (ms) {
+                        const d = new Date(ms);
+                        dateEl.textContent = 'Visited ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        dateEl.style.color = 'var(--color-accent)';
+                        dateEl.style.fontWeight = '600';
+                    } else {
+                        dateEl.textContent = card.dataset.origDateText;
+                        dateEl.style.color = 'var(--color-muted)';
+                        dateEl.style.fontWeight = '';
+                    }
+                } else {
+                    dateEl.textContent = card.dataset.origDateText;
+                    dateEl.style.color = '';
+                    dateEl.style.fontWeight = '';
+                }
+            });
+        }
+
         function renderCards() {
             if (!grid) return;
 
             const sorted = sortCards(displayedCards);
             chunkOffset = 0;
+
+            // Update date labels on cards before layout
+            updateCardDates();
 
             // Update count
             if (countEl) {
@@ -345,47 +391,79 @@
         }
 
         function renderWithLabels(cards) {
-            // Group
-            const groups = {};
-            cards.forEach(card => {
-                let key;
-                if (state.sort === 'name') {
-                    key = (card.dataset.title || '?')[0].toUpperCase();
-                    if (!/[A-Z]/.test(key)) key = '#';
-                } else {
-                    // Date-based grouping – trim leading space before parsing
-                    const d = new Date((card.dataset.date || '').trim());
-                    key = isNaN(d.getTime())
-                        ? 'No Date'
-                        : d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                }
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(card);
-            });
+            if (state.sort === 'watched') {
+                // --- Watched mode: group watched by month-year, then "Not Yet Visited" A-Z ---
+                const watchedGroups = {};  // key = "Visited Month YYYY"
+                const unwatched = [];
 
-            // Render groups
-            Object.entries(groups).forEach(([key, groupCards]) => {
-                const details = document.createElement('details');
-                details.className = 'label-group';
-                details.open = true;
-
-                const summary = document.createElement('summary');
-                summary.innerHTML = `${key} <span class="group-count">${groupCards.length}</span>`;
-                details.appendChild(summary);
-
-                const inner = document.createElement('div');
-                inner.className = 'label-group-content notes-grid' + (state.view === 'list' ? ' view-list' : '');
-                groupCards.forEach(c => {
-                    c.classList.remove('hidden-note');
-                    inner.appendChild(c);
+                cards.forEach(card => {
+                    const ms = getWatchedMs(card);
+                    if (ms) {
+                        const d = new Date(ms);
+                        const key = 'Visited ' + d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                        if (!watchedGroups[key]) watchedGroups[key] = [];
+                        watchedGroups[key].push(card);
+                    } else {
+                        unwatched.push(card);
+                    }
                 });
-                details.appendChild(inner);
 
-                grid.insertBefore(details, sentinel);
-            });
+                // Render watched month groups (already in date order from sortCards)
+                Object.entries(watchedGroups).forEach(([key, groupCards]) => {
+                    renderLabelGroup(key, groupCards);
+                });
+
+                // Render unwatched (A-Z) at the end
+                if (unwatched.length) {
+                    const sorted = [...unwatched].sort((a, b) => {
+                        const na = (a.dataset.title || '').toLowerCase();
+                        const nb = (b.dataset.title || '').toLowerCase();
+                        return na < nb ? -1 : na > nb ? 1 : 0;
+                    });
+                    renderLabelGroup('Not Yet Visited', sorted);
+                }
+            } else {
+                // --- Name / Created mode ---
+                const groups = {};
+                cards.forEach(card => {
+                    let key;
+                    if (state.sort === 'name') {
+                        key = (card.dataset.title || '?')[0].toUpperCase();
+                        if (!/[A-Z]/.test(key)) key = '#';
+                    } else {
+                        const d = new Date((card.dataset.date || '').trim());
+                        key = isNaN(d.getTime())
+                            ? 'No Date'
+                            : d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    }
+                    if (!groups[key]) groups[key] = [];
+                    groups[key].push(card);
+                });
+                Object.entries(groups).forEach(([key, groupCards]) => renderLabelGroup(key, groupCards));
+            }
 
             if (sentinel) sentinel.textContent = '';
             chunkOffset = cards.length;
+        }
+
+        // Shared helper: create a label-group details element and insert it
+        function renderLabelGroup(key, groupCards) {
+            const details = document.createElement('details');
+            details.className = 'label-group';
+            details.open = true;
+
+            const summary = document.createElement('summary');
+            summary.innerHTML = `${key} <span class="group-count">${groupCards.length}</span>`;
+            details.appendChild(summary);
+
+            const inner = document.createElement('div');
+            inner.className = 'label-group-content notes-grid' + (state.view === 'list' ? ' view-list' : '');
+            groupCards.forEach(c => {
+                c.classList.remove('hidden-note');
+                inner.appendChild(c);
+            });
+            details.appendChild(inner);
+            grid.insertBefore(details, sentinel);
         }
 
         function loadChunk() {
