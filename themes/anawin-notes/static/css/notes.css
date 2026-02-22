@@ -332,6 +332,13 @@
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fill, minmax(var(--card-size, 220px), 1fr));
 
+    /* When acting as the label-group container, always stack groups vertically.
+       The inner .label-group-content.notes-grid (no .label-group children)
+       keeps multi-column in gallery mode. */
+    &:has(> .label-group) {
+        grid-template-columns: 1fr;
+    }
+
     &.view-list {
         grid-template-columns: 1fr;
         gap: var(--space-3);
