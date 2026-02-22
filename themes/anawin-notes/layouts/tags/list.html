@@ -1,35 +1,61 @@
 {{ define "main" }}
+{{ $tags := .Site.Taxonomies.tags }}
+
 <div class="container tags-page animate-fade-in-up">
-    <div class="page-hero">
-        <h1 class="page-hero-title">
-            <span class="page-hero-icon">🏷️</span>
-            Tags
-        </h1>
-        <p class="page-hero-desc">Browse notes by topic.</p>
-    </div>
+    <div id="tags-list-container">
 
-    <div class="tags-cloud">
-        {{ $tags := .Site.Taxonomies.tags }}
-        {{ $maxCount := 1 }}
-        {{ range $tags }}
-        {{ if gt (len .) $maxCount }}{{ $maxCount = len . }}{{ end }}
-        {{ end }}
-
-        {{ range $name, $pages := $tags }}
-        {{ $count := len $pages }}
-        {{ $weight := div (mul $count 10) $maxCount }}
-        <a href="/tags/{{ $name | urlize }}/" class="tag-cloud-item" style="--tag-weight: {{ $weight }}"
-            aria-label="{{ $name }} – {{ $count }} notes">
-            <span>#{{ $name }}</span>
-            <span class="tag-count">{{ $count }}</span>
-        </a>
-        {{ else }}
-        <div class="empty-state">
-            <div class="empty-icon">🏷️</div>
-            <div class="empty-title">No tags yet</div>
-            <div class="empty-desc">Add tags to your notes to see them here.</div>
+        <div class="notes-header">
+            <h1 class="notes-title">🏷️ Tags</h1>
+            <div class="notes-count">{{ len $tags }} tag{{ if ne (len $tags) 1 }}s{{ end }}</div>
         </div>
-        {{ end }}
-    </div>
+
+        <div class="notes-toolbar">
+            <div class="toolbar-left">
+                <div class="sort-group">
+                    <button data-sort="name">Name</button>
+                    <button data-sort="count">Count</button>
+                </div>
+                <button class="asc-btn" data-asc-toggle aria-label="Toggle order">↑</button>
+                <div class="toolbar-divider"></div>
+                <div class="label-toggle-wrap" data-label-toggle>
+                    <span>Label</span>
+                    <div class="toggle" role="switch" aria-checked="false"></div>
+                </div>
+                <div class="toolbar-divider"></div>
+                <div class="label-toggle-wrap" data-count-toggle>
+                    <span>Count</span>
+                    <div class="toggle" role="switch" aria-checked="true"></div>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <div class="search-toggle-wrap">
+                    <button class="search-btn">🔍 Search</button>
+                    <div class="search-input-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search tags…" aria-label="Search tags" />
+                        <button class="search-clear">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tags-grid" id="tags-grid">
+            {{ range $name, $pages := $tags }}
+            {{ $count := len $pages }}
+            <a class="tag-item" data-name="{{ $name }}" data-count="{{ $count }}" href="/tags/{{ $name | urlize }}/"
+                aria-label="{{ $name }} – {{ $count }} note{{ if ne $count 1 }}s{{ end }}">
+                <span class="tag-badge">#{{ $name }}</span>
+                <span class="tag-count">{{ $count }}</span>
+            </a>
+            {{ else }}
+            <div class="empty-state">
+                <div class="empty-icon">🏷️</div>
+                <div class="empty-title">No tags yet</div>
+                <div class="empty-desc">Add tags to your notes to see them here.</div>
+            </div>
+            {{ end }}
+        </div>
+
+    </div>{{/* end #tags-list-container */}}
 </div>
 {{ end }}

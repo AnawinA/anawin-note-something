@@ -181,3 +181,109 @@
         font-weight: 700;
     }
 }
+
+/* ============================================================
+   TAG COLORING – hue mapped from first letter (A=red, Z=pink)
+   Applied by tag-colors.js via --tag-hue CSS variable
+   ============================================================ */
+.tag-pill.tag-colored,
+.tag-badge.tag-colored,
+.tag-cloud-item.tag-colored {
+    background: hsl(var(--tag-hue, 200), 70%, 90%);
+    color: hsl(var(--tag-hue, 200), 65%, 30%);
+    border-color: hsl(var(--tag-hue, 200), 55%, 78%);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tag-pill.tag-colored:hover,
+.tag-badge.tag-colored:hover,
+.tag-cloud-item.tag-colored:hover {
+    background: hsl(var(--tag-hue, 200), 75%, 84%);
+    border-color: hsl(var(--tag-hue, 200), 65%, 60%);
+    color: hsl(var(--tag-hue, 200), 65%, 25%);
+}
+
+[data-theme="dark"] .tag-pill.tag-colored,
+[data-theme="dark"] .tag-badge.tag-colored,
+[data-theme="dark"] .tag-cloud-item.tag-colored {
+    background: hsl(var(--tag-hue, 200), 35%, 22%);
+    color: hsl(var(--tag-hue, 200), 60%, 72%);
+    border-color: hsl(var(--tag-hue, 200), 35%, 35%);
+}
+
+[data-theme="dark"] .tag-pill.tag-colored:hover,
+[data-theme="dark"] .tag-badge.tag-colored:hover,
+[data-theme="dark"] .tag-cloud-item.tag-colored:hover {
+    background: hsl(var(--tag-hue, 200), 40%, 28%);
+    border-color: hsl(var(--tag-hue, 200), 45%, 45%);
+}
+
+/* ============================================================
+   TAGS PAGE – new toolbar layout + tag items grid
+   ============================================================ */
+.tags-page {
+    padding: var(--space-8) var(--space-8) var(--space-16);
+}
+
+/* Tags grid: flex-wrap, items are pill+count pairs */
+.tags-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: flex-start;
+
+    /* When label groups are inside */
+    & .label-group {
+        width: 100%;
+    }
+}
+
+.tags-grid-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-left: var(--space-2);
+}
+
+/* Individual tag item in the new tags list */
+.tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    transition: transform var(--transition-fast);
+
+    &:hover {
+        transform: translateY(-2px);
+
+        & .tag-badge {
+            box-shadow: var(--shadow);
+        }
+    }
+
+    & .tag-count {
+        font-size: var(--font-size-xs);
+        font-weight: 700;
+        color: var(--color-muted);
+        background: var(--color-surface-2);
+        padding: 1px var(--space-2);
+        border-radius: var(--radius-full);
+        border: 1px solid var(--color-border);
+        line-height: 1.6;
+    }
+}
+
+/* tag-badge: like tag-pill but slightly larger, used on tags list page */
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    background: var(--color-tag-bg, var(--color-surface-2));
+    color: var(--color-tag-text, var(--color-text-2));
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
