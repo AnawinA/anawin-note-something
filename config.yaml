@@ -3,8 +3,9 @@ languageCode: "en-us"
 title: "Anawin Note Something"
 theme: "anawin-notes"
 
-# Pagination
-paginate: 30
+# Pagination (Hugo v0.128+ syntax)
+pagination:
+  pagerSize: 30
 
 # Outputs – enable JSON for search index
 outputs:
