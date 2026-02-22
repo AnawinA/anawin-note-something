@@ -186,8 +186,8 @@
             if (matchCaseBtn) matchCaseBtn.classList.toggle('active', state.matchCase);
             if (state.searchText) {
                 searchText = state.searchText;
-                searchBtn.classList.add('has-text');
-                searchBtn.innerHTML = `🔍 <span>${escapeHtml(searchText)}</span>`;
+                searchBtn?.classList.add('has-text');
+                if (searchBtn) searchBtn.innerHTML = `🔍 <span>${escapeHtml(searchText)}</span>`;
             }
             filterAndRender();
         }
