@@ -154,8 +154,28 @@
             closeSearch();
         });
 
-        // Auto-open search if ?q= in URL
-        const urlQ = new URLSearchParams(location.search).get('q');
+        // --- URL Mode Handler ---
+        // Runs after all event listeners so applyMode can trigger them cleanly
+        const urlParams = new URLSearchParams(location.search);
+        const urlMode = urlParams.get('mode');
+        const urlQ = urlParams.get('q');
+
+        if (urlMode === 'search') {
+            // Open search input immediately, focused and ready to type
+            openSearch();
+        } else if (urlMode === 'history') {
+            // Sort by watched date, newest first – don't persist this as default
+            state.sort = 'watched';
+            state.asc = false;
+            applySortButtons();
+            applyAscBtn();
+            renderCards();
+            // Show a subtle page title banner
+            const header = container.querySelector('.notes-header .notes-title');
+            if (header) header.textContent = '🕐 Recently Watched';
+        }
+
+        // Pre-fill search from ?q= (works with or without mode=search)
         if (urlQ) {
             searchText = urlQ;
             state.searchText = urlQ;
