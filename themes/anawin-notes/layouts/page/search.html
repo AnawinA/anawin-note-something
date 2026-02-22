@@ -1,0 +1,141 @@
+{{ define "main" }}
+{{/* Search – builds a JSON data blob from all pages, searches client-side */}}
+
+{{/* Embed all notes data as JSON for client-side search */}}
+<script id="search-index" type="application/json">
+[{{ range $i, $p := where .Site.RegularPages "Draft" false }}{{ if $i }},{{ end }}{
+  "url": "{{ $p.RelPermalink }}",
+  "title": {{ $p.Title | jsonify }},
+  "desc": {{ with $p.Params.description }}{{ . | jsonify }}{{ else }}{{ $p.Summary | truncate 200 | jsonify }}{{ end }},
+  "tags": {{ $p.Params.tags | jsonify }},
+  "date": "{{ $p.Date.Format "2006-01-02" }}",
+  "section": {{ $p.Section | jsonify }},
+  "image": {{ $p.Params.image | default "" | jsonify }}
+}{{ end }}]
+</script>
+
+<div class="container search-page animate-fade-in-up">
+    <div class="page-hero">
+        <h1 class="page-hero-title">
+            <span class="page-hero-icon">🔍</span>
+            Search
+        </h1>
+        <p class="page-hero-desc">Find anything across all your notes instantly.</p>
+    </div>
+
+    <div class="search-input-hero">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="search-input-main" placeholder="Type to search notes…" aria-label="Search all notes"
+            autocomplete="off" autofocus />
+    </div>
+
+    <div class="search-options-bar">
+        <label><input type="checkbox" id="opt-whole-word" /> Whole words</label>
+        <label><input type="checkbox" id="opt-match-case" /> Match case</label>
+        <span id="search-result-count" class="search-results-count" style="margin-left:auto"></span>
+    </div>
+
+    <div id="search-results"></div>
+</div>
+
+<script>
+    (function () {
+        const indexEl = document.getElementById('search-index');
+        const notes = JSON.parse(indexEl.textContent);
+        const input = document.getElementById('search-input-main');
+        const resultEl = document.getElementById('search-results');
+        const countEl = document.getElementById('search-result-count');
+        const optWhole = document.getElementById('opt-whole-word');
+        const optCase = document.getElementById('opt-match-case');
+
+        function escapeHtml(str) {
+            return String(str).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function highlight(text, pattern) {
+            return text.replace(pattern, m => `<mark class="search-highlight">${escapeHtml(m)}</mark>`);
+        }
+
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function search(query) {
+            if (!query.trim()) {
+                resultEl.innerHTML = '';
+                countEl.textContent = '';
+                return;
+            }
+
+            let flags = optCase.checked ? '' : 'i';
+            let pattern;
+            try {
+                if (optWhole.checked) {
+                    pattern = new RegExp(`\\b${escapeRegex(query)}\\b`, flags + 'g');
+                } else {
+                    pattern = new RegExp(escapeRegex(query), flags + 'g');
+                }
+            } catch (e) { return; }
+
+            const results = notes.filter(n => {
+                const haystack = [n.title, n.desc, (n.tags || []).join(' ')].join(' ');
+                return pattern.test(haystack);
+            });
+
+            countEl.innerHTML = `<strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "${escapeHtml(query)}"`;
+
+            if (!results.length) {
+                resultEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No results</div>
+          <div class="empty-desc">Try different keywords or check your spelling.</div>
+        </div>`;
+                return;
+            }
+
+            resultEl.innerHTML = results.map(n => {
+                // Reset lastIndex
+                pattern.lastIndex = 0;
+                const title = highlight(escapeHtml(n.title), pattern);
+                pattern.lastIndex = 0;
+                const desc = highlight(escapeHtml(n.desc || ''), pattern);
+                const tags = (n.tags || []).map(t => `<span class="tag-pill">🏷️ ${escapeHtml(t)}</span>`).join(' ');
+
+                return `<a href="${n.url}" class="note-card list-card" style="margin-bottom:var(--space-3);text-decoration:none">
+        <div class="note-card-img" style="width:80px;min-height:70px;flex-shrink:0">
+          ${n.image ? `<img src="${n.image}" alt="" loading="lazy"/>` : '📝'}
+        </div>
+        <div class="note-card-body">
+          <div class="note-card-main">
+            <div class="note-card-title">${title}</div>
+            <div class="note-card-desc">${desc}</div>
+          </div>
+          <div class="note-card-meta" style="margin-top:0;flex-direction:column;align-items:flex-end">
+            <div class="note-card-date">${n.date}</div>
+            <div class="note-card-tags">${tags}</div>
+          </div>
+        </div>
+      </a>`;
+            }).join('');
+        }
+
+        let debounceTimer;
+        function onInput() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => search(input.value), 120);
+        }
+
+        input.addEventListener('input', onInput);
+        optWhole.addEventListener('change', () => search(input.value));
+        optCase.addEventListener('change', () => search(input.value));
+
+        // Auto-run if URL has ?q=
+        const params = new URLSearchParams(location.search);
+        if (params.has('q')) {
+            input.value = params.get('q');
+            search(input.value);
+        }
+    })();
+</script>
+{{ end }}

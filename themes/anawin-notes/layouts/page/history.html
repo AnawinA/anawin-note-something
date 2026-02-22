@@ -1,0 +1,96 @@
+{{ define "main" }}
+<div class="container history-page animate-fade-in-up">
+    <div class="page-hero">
+        <h1 class="page-hero-title">
+            <span class="page-hero-icon">🕐</span>
+            History
+        </h1>
+        <p class="page-hero-desc">Notes you&rsquo;ve recently visited, newest first.</p>
+    </div>
+
+    {{/* Toolbar for history (independent settings from Notes) */}}
+    <div class="notes-toolbar history-tools" style="margin-bottom:var(--space-6)">
+        <div class="toolbar-left">
+            <div class="view-toggle">
+                <button data-view="gallery" class="active" title="Gallery">⊞</button>
+                <button data-view="list" title="List">☰</button>
+            </div>
+        </div>
+        <div class="toolbar-right">
+            <button id="history-clear-btn" class="btn btn-ghost" style="font-size:var(--font-size-xs)">🗑️ Clear
+                history</button>
+        </div>
+    </div>
+
+    <div id="notes-list-container" data-section-key="history">
+        <div class="notes-grid view-list" id="history-grid">
+            {{/* Rendered by JS from localStorage */}}
+            <div class="load-sentinel"></div>
+        </div>
+    </div>
+
+    <div class="empty-state" id="history-empty" style="display:none">
+        <div class="empty-icon">🕐</div>
+        <div class="empty-title">No history yet</div>
+        <div class="empty-desc">Start reading <a href="/notes/">notes</a> to build your visit history.</div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            const grid = document.getElementById('history-grid');
+            const emptyEl = document.getElementById('history-empty');
+            const clearBtn = document.getElementById('history-clear-btn');
+
+            function render() {
+                const history = window.AnawinHistory ? window.AnawinHistory.getHistory() : [];
+                // Remove old cards
+                grid.querySelectorAll('.note-card').forEach(el => el.remove());
+
+                if (!history.length) {
+                    emptyEl.style.display = '';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+
+                history.forEach(function (item) {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.className = 'note-card list-card';
+                    a.dataset.title = item.title;
+                    a.dataset.url = item.url;
+                    a.dataset.date = item.date || '';
+
+                    const visitDate = new Date(item.visitedAt);
+                    const visitStr = visitDate.toLocaleString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+
+                    a.innerHTML = `
+          <div class="note-card-img" style="width:80px;min-height:70px;flex-shrink:0">🕐</div>
+          <div class="note-card-body">
+            <div class="note-card-main">
+              <div class="note-card-title">${item.title}</div>
+              <div class="history-timestamp">⏱ Visited ${visitStr}</div>
+            </div>
+          </div>`;
+
+                    const sentinel = grid.querySelector('.load-sentinel');
+                    grid.insertBefore(a, sentinel);
+                });
+            }
+
+            render();
+
+            clearBtn?.addEventListener('click', function () {
+                if (confirm('Clear all visit history?')) {
+                    window.AnawinHistory?.clearHistory();
+                    render();
+                }
+            });
+        });
+    })();
+</script>
+{{ end }}

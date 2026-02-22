@@ -1,0 +1,147 @@
+{{ define "main" }}
+{{/* Reusable note-card macro as partial data */}}
+{{ $sectionKey := .RelPermalink | urlize }}
+{{ $isDrafts := eq .Layout "drafts" }}
+
+{{/* Collect pages */}}
+{{ $pages := .Pages }}
+{{ if $isDrafts }}
+{{ $pages = where .Site.RegularPages "Draft" true }}
+{{ end }}
+
+<div class="container notes-page animate-fade-in-up">
+
+    {{/* Breadcrumb */}}
+    <div class="notes-header">
+        {{ if .Parent }}
+        <div class="notes-breadcrumb">
+            <a href="/">Home</a>
+            <span class="sep">›</span>
+            {{ if .Parent.Parent }}
+            <a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a>
+            <span class="sep">›</span>
+            {{ end }}
+            {{ .Title }}
+        </div>
+        {{ end }}
+        <h1 class="notes-title">
+            {{ if eq .RelPermalink "/notes/" }}📝 Notes
+            {{ else if eq .Layout "history" }}🕐 History
+            {{ else if $isDrafts }}✏️ Drafts
+            {{ else }}{{ .Title }}{{ end }}
+        </h1>
+        <div class="notes-count">{{ len $pages }} note{{ if ne (len $pages) 1 }}s{{ end }}</div>
+    </div>
+
+    {{/* Toolbar */}}
+    <div class="notes-toolbar" id="notes-toolbar">
+        <div class="toolbar-left">
+            {{/* View toggle */}}
+            <div class="view-toggle" role="group" aria-label="View style">
+                <button data-view="gallery" class="active" aria-label="Gallery view" title="Gallery">⊞</button>
+                <button data-view="list" aria-label="List view" title="List">☰</button>
+            </div>
+
+            <div class="toolbar-divider"></div>
+
+            {{/* Sort */}}
+            <div class="sort-group" role="group" aria-label="Sort by">
+                <button data-sort="name">Name</button>
+                <button data-sort="created" class="active">Created</button>
+                <button data-sort="watched">Watched</button>
+            </div>
+
+            {{/* Asc/Desc */}}
+            <button class="asc-btn desc" data-asc-toggle aria-label="Descending">↑</button>
+
+            <div class="toolbar-divider"></div>
+
+            {{/* Label toggle */}}
+            <div class="label-toggle-wrap" data-label-toggle>
+                <span>Label</span>
+                <div class="toggle" role="switch" aria-checked="false"></div>
+            </div>
+        </div>
+
+        <div class="toolbar-right">
+            {{/* Size range */}}
+            <div class="size-range">
+                <span>🔲</span>
+                <input type="range" data-size-range min="140" max="400" value="220" aria-label="Card size" />
+                <span>🔳</span>
+            </div>
+
+            {{/* Search */}}
+            <div class="search-toggle-wrap">
+                <button class="search-btn" aria-label="Search">🔍 Search</button>
+                <div class="search-input-wrap" role="search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search notes…" aria-label="Search notes" />
+                    <div class="search-options">
+                        <button data-whole-word title="Whole words">W</button>
+                        <button data-match-case title="Match case">Aa</button>
+                    </div>
+                    <button class="search-clear" aria-label="Clear search">✕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{/* Notes grid */}}
+    <div id="notes-list-container" data-section-key="{{ $sectionKey }}">
+        <div class="notes-grid" role="list">
+            {{ range $pages }}
+            {{ $url := .RelPermalink }}
+            {{ $date := .Date.Format "2006-01-02T15:04:05Z07:00" }}
+            {{ $tags := delimit .Params.tags "," }}
+            {{ $section := .Section }}
+            <a href="{{ .RelPermalink }}" class="note-card" role="listitem" data-title="{{ .Title }}"
+                data-desc="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | truncate 120 }}{{ end }}"
+                data-date="{{ $date }}" data-tags="{{ $tags }}" data-url="{{ $url }}">
+                {{/* Image */}}
+                <div class="note-card-img">
+                    {{ with .Params.image }}
+                    <img src="{{ . | relURL }}" alt="{{ $.Title }}" loading="lazy" />
+                    {{ else }}
+                    📝
+                    {{ end }}
+                </div>
+
+                <div class="note-card-body">
+                    {{/* Folder path */}}
+                    {{ if $section }}
+                    <div class="note-card-folder">
+                        📁 {{ $section }}{{ if .Parent.Parent }} / {{ .Parent.Title }}{{ end }}
+                    </div>
+                    {{ end }}
+
+                    {{/* Title + desc */}}
+                    <div class="note-card-main">
+                        <div class="note-card-title">{{ .Title }}</div>
+                        <div class="note-card-desc">
+                            {{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | truncate 120 }}{{ end }}
+                        </div>
+                    </div>
+
+                    {{/* Meta */}}
+                    <div class="note-card-meta">
+                        <div class="note-card-date">{{ dateFormat "Jan 2, 2006" .Date }}</div>
+                        {{ with .Params.tags }}
+                        <div class="note-card-tags">
+                            {{ range first 3 . }}
+                            <span class="tag-pill">{{ . }}</span>
+                            {{ end }}
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+
+            {{/* Chunk loader sentinel */}}
+            <div class="load-sentinel" aria-hidden="true"></div>
+        </div>
+    </div>
+
+</div>
+{{ end }}

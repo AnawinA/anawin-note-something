@@ -1,0 +1,99 @@
+{{ define "main" }}
+{{/* notes-all layout: shows ALL regular pages site-wide */}}
+{{ $excludeSlugs := slice "search" "history" "drafts" "notes" }}
+{{ $allPages := slice }}
+{{ range .Site.RegularPages }}
+{{ if not (in $excludeSlugs .File.ContentBaseName) }}
+{{ $allPages = $allPages | append . }}
+{{ end }}
+{{ end }}
+
+{{ $sectionKey := "notes-all" }}
+
+<div class="container notes-page animate-fade-in-up">
+    <div class="notes-header">
+        <h1 class="notes-title">📝 Notes</h1>
+        <div class="notes-count">{{ len $allPages }} note{{ if ne (len $allPages) 1 }}s{{ end }}</div>
+    </div>
+
+    <div class="notes-toolbar">
+        <div class="toolbar-left">
+            <div class="view-toggle">
+                <button data-view="gallery" class="active" title="Gallery">⊞</button>
+                <button data-view="list" title="List">☰</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="sort-group">
+                <button data-sort="name">Name</button>
+                <button data-sort="created" class="active">Created</button>
+                <button data-sort="watched">Watched</button>
+            </div>
+            <button class="asc-btn desc" data-asc-toggle aria-label="Descending">↑</button>
+            <div class="toolbar-divider"></div>
+            <div class="label-toggle-wrap" data-label-toggle>
+                <span>Label</span>
+                <div class="toggle" role="switch" aria-checked="false"></div>
+            </div>
+        </div>
+        <div class="toolbar-right">
+            <div class="size-range">
+                <span>🔲</span>
+                <input type="range" data-size-range min="140" max="400" value="220" aria-label="Card size" />
+                <span>🔳</span>
+            </div>
+            <div class="search-toggle-wrap">
+                <button class="search-btn" aria-label="Search">🔍 Search</button>
+                <div class="search-input-wrap" role="search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search notes…" aria-label="Search notes" />
+                    <div class="search-options">
+                        <button data-whole-word title="Whole words">W</button>
+                        <button data-match-case title="Match case">Aa</button>
+                    </div>
+                    <button class="search-clear" aria-label="Clear">✕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notes-list-container" data-section-key="{{ $sectionKey }}">
+        <div class="notes-grid">
+            {{ range $allPages }}
+            <a href="{{ .RelPermalink }}" class="note-card" data-title="{{ .Title }}"
+                data-desc="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | truncate 120 }}{{ end }}"
+                data-date="{{ .Date.Format " 2006-01-02T15:04:05Z07:00" }}" data-tags="{{ delimit .Params.tags " ," }}"
+                data-url="{{ .RelPermalink }}">
+                <div class="note-card-img">
+                    {{ with .Params.image }}<img src="{{ . | relURL }}" alt="{{ $.Title }}" loading="lazy" />{{ else
+                    }}📝{{ end }}
+                </div>
+                <div class="note-card-body">
+                    {{ if .Section }}
+                    <div class="note-card-folder">📁 {{ .Section }}</div>
+                    {{ end }}
+                    <div class="note-card-main">
+                        <div class="note-card-title">{{ .Title }}</div>
+                        <div class="note-card-desc">{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary |
+                            truncate 120 }}{{ end }}</div>
+                    </div>
+                    <div class="note-card-meta">
+                        <div class="note-card-date">{{ dateFormat "Jan 2, 2006" .Date }}</div>
+                        {{ with .Params.tags }}
+                        <div class="note-card-tags">{{ range first 3 . }}<span class="tag-pill">{{ . }}</span>{{ end }}
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ else }}
+            <div class="empty-state">
+                <div class="empty-icon">🗒️</div>
+                <div class="empty-title">No notes yet</div>
+                <div class="empty-desc">Create your first note with <code>hugo new my-note.md</code></div>
+            </div>
+            {{ end }}
+            <div class="load-sentinel"></div>
+        </div>
+    </div>
+</div>
+{{ end }}

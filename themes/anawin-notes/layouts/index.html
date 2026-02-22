@@ -1,0 +1,142 @@
+{{ define "main" }}
+{{/* Collect all non-draft regular pages */}}
+{{ $allPages := where .Site.RegularPages "Draft" false }}
+{{ $notes := len $allPages }}
+
+{{/* Count unique sections (folders) */}}
+{{ $sections := slice }}
+{{ range $allPages }}
+{{ $sec := .Section }}
+{{ if and $sec (not (in $sections $sec)) }}
+{{ $sections = $sections | append $sec }}
+{{ end }}
+{{ end }}
+{{ $folders := len $sections }}
+
+{{/* Count tags */}}
+{{ $tagCount := len .Site.Taxonomies.tags }}
+
+{{/* Hero */}}
+<section class="landing-hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-eyebrow">Personal Notebook</div>
+            <h1 class="hero-title">
+                Note<br /><em>Everything</em>
+            </h1>
+            <p class="hero-desc">{{ .Site.Params.description }}</p>
+        </div>
+        <div class="hero-image">
+            <div class="hero-img-box">
+                {{ with .Site.Params.heroImage }}
+                <img src="{{ . | relURL }}" alt="Hero image" />
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</section>
+
+{{/* Stats */}}
+<section class="landing-stats">
+    <div class="stats-inner">
+        <div class="stat-item">
+            <div class="stat-icon">📝</div>
+            <div class="stat-number" data-count-up="{{ $notes }}">0</div>
+            <div class="stat-label">Notes</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-icon">📁</div>
+            <div class="stat-number" data-count-up="{{ $folders }}">0</div>
+            <div class="stat-label">Folders</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-icon">🏷️</div>
+            <div class="stat-number" data-count-up="{{ $tagCount }}">0</div>
+            <div class="stat-label">Tags</div>
+        </div>
+    </div>
+</section>
+
+{{/* Quick Access */}}
+<section class="landing-quick">
+    <div class="quick-inner">
+        <h2 class="quick-section-title">Quick Access</h2>
+        <div class="quick-grid">
+
+            {{/* Latest Created */}}
+            <div class="quick-col">
+                <div class="quick-col-header">
+                    <div class="quick-col-title">📅 Latest Created</div>
+                    <a href="/notes/" class="quick-col-link">See all →</a>
+                </div>
+                <div class="quick-list">
+                    {{ $latest := first 5 (sort $allPages "Date" "desc") }}
+                    {{ range $latest }}
+                    <a href="{{ .RelPermalink }}" class="quick-note-item">
+                        <div class="quick-note-thumb">
+                            {{ with .Params.image }}
+                            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
+                            {{ else }}
+                            📝
+                            {{ end }}
+                        </div>
+                        <div class="quick-note-info">
+                            <div class="quick-note-title">{{ .Title }}</div>
+                            <div class="quick-note-date">{{ dateFormat "Jan 2, 2006" .Date }}</div>
+                        </div>
+                        <span class="quick-note-arrow">›</span>
+                    </a>
+                    {{ else }}
+                    <div class="quick-empty">No notes yet. <a href="/notes/">Go to Notes →</a></div>
+                    {{ end }}
+                </div>
+            </div>
+
+            {{/* Recently Visited – rendered by JS from localStorage */}}
+            <div class="quick-col">
+                <div class="quick-col-header">
+                    <div class="quick-col-title">🕐 Recently Visited</div>
+                    <a href="/history/" class="quick-col-link">See all →</a>
+                </div>
+                <div class="quick-list" id="landing-history-list">
+                    <div class="quick-empty" id="landing-history-empty">
+                        No visits yet. Start reading some notes!
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            const list = document.getElementById('landing-history-list');
+            const empty = document.getElementById('landing-history-empty');
+            if (!list || !window.AnawinHistory) return;
+
+            const history = window.AnawinHistory.getHistory().slice(0, 5);
+            if (!history.length) return;
+
+            empty.remove();
+            history.forEach(function (item) {
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.className = 'quick-note-item';
+                a.innerHTML = `
+        <div class="quick-note-thumb">🕐</div>
+        <div class="quick-note-info">
+          <div class="quick-note-title">${item.title}</div>
+          <div class="quick-note-date">Visited ${new Date(item.visitedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+        </div>
+        <span class="quick-note-arrow">›</span>
+      `;
+                list.appendChild(a);
+            });
+        });
+    })();
+</script>
+{{ end }}

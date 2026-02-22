@@ -1,0 +1,249 @@
+/* ============================================================
+   ANAWIN NOTES – Navbar
+   ============================================================ */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: var(--nav-height);
+    background: var(--nav-bg);
+    backdrop-filter: var(--nav-blur);
+    -webkit-backdrop-filter: var(--nav-blur);
+    border-bottom: 1px solid transparent;
+    transition:
+        height var(--transition-slow),
+        background var(--transition-slow),
+        border-color var(--transition-slow),
+        box-shadow var(--transition-slow);
+
+    & .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding: 0 var(--space-6);
+        max-width: 1400px;
+        margin: 0 auto;
+        gap: var(--space-4);
+    }
+
+    /* Left side */
+    & .nav-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        flex-shrink: 0;
+    }
+
+    & .nav-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+        text-decoration: none;
+        color: #fff;
+        font-weight: 700;
+        font-size: var(--font-size-sm);
+        flex-shrink: 0;
+        transition: transform var(--transition-fast), opacity var(--transition);
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+
+        &:hover {
+            transform: scale(1.05);
+            color: #fff;
+        }
+
+        & span {
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
+    }
+
+    & .nav-theme-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-text-2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--transition-fast);
+        font-size: 1rem;
+
+        &:hover {
+            background: var(--color-surface-2);
+            color: var(--color-text);
+            border-color: var(--color-accent);
+        }
+    }
+
+    /* Right side */
+    & .nav-right {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+    }
+
+    & .nav-links {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        list-style: none;
+
+        & li a,
+        & li button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--color-text-2);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+
+            & .nav-icon {
+                font-size: 1rem;
+                opacity: 0.8;
+            }
+
+            &:hover {
+                background: var(--color-surface-2);
+                color: var(--color-text);
+            }
+
+            &.active {
+                background: var(--color-surface-2);
+                color: var(--color-accent);
+                font-weight: 600;
+            }
+        }
+
+        & li.drafts-item a {
+            color: var(--color-accent-2);
+
+            &:hover {
+                background: color-mix(in srgb, var(--color-accent-2) 10%, transparent);
+                color: var(--color-accent-2);
+            }
+        }
+    }
+
+    /* Hamburger button (mobile) */
+    & .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 24px;
+        height: 18px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        gap: 4px;
+
+        & span {
+            display: block;
+            height: 2px;
+            background: var(--color-text);
+            border-radius: 2px;
+            transition: all var(--transition);
+        }
+
+        &.open {
+            & span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            & span:nth-child(2) {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+
+            & span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+        }
+    }
+}
+
+/* === COMPACT (scrolled) === */
+.navbar.compact {
+    height: var(--nav-height-compact);
+    background: var(--nav-bg-compact);
+    border-bottom-color: var(--color-border);
+    box-shadow: var(--shadow-sm);
+
+    & .nav-logo {
+        width: 32px;
+        height: 32px;
+        font-size: var(--font-size-xs);
+    }
+
+    & .nav-links li a,
+    & .nav-links li button {
+        font-size: var(--font-size-xs);
+        padding: var(--space-1) var(--space-2);
+    }
+}
+
+/* === MOBILE NAV === */
+@media (max-width: 768px) {
+    .navbar {
+        & .nav-hamburger {
+            display: flex;
+        }
+
+        & .nav-right {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--nav-bg-compact);
+            backdrop-filter: var(--nav-blur);
+            -webkit-backdrop-filter: var(--nav-blur);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-2) var(--space-4);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: all var(--transition);
+        }
+
+        & .nav-links {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+
+            & li a,
+            & li button {
+                width: 100%;
+                justify-content: flex-start;
+                padding: var(--space-3) var(--space-4);
+                font-size: var(--font-size-base);
+            }
+        }
+
+        &.nav-open .nav-right {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+    }
+}

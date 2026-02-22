@@ -1,9 +1,25 @@
 baseURL: "https://anawin-note-something.netlify.app/"
 languageCode: "en-us"
-title: "Anawin Note Something..."
-theme: "ga-hugo-theme-master"
+title: "Anawin Note Something"
+theme: "anawin-notes"
+
+# Pagination
+paginate: 30
+
+# Outputs – enable JSON for search index
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
 
 taxonomies:
   tag: tags
-  category: categories
-  mood: moods
+
+params:
+  author: "Anawin A."
+  description: "A personal notebook for everything – notes, ideas, and knowledge."
+  favicon: ""
+  heroImage: ""  # placeholder until custom image added
+
+# Menus handled in navbar partial via hugo.IsServer for Drafts

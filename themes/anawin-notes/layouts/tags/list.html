@@ -1,0 +1,35 @@
+{{ define "main" }}
+<div class="container tags-page animate-fade-in-up">
+    <div class="page-hero">
+        <h1 class="page-hero-title">
+            <span class="page-hero-icon">🏷️</span>
+            Tags
+        </h1>
+        <p class="page-hero-desc">Browse notes by topic.</p>
+    </div>
+
+    <div class="tags-cloud">
+        {{ $tags := .Site.Taxonomies.tags }}
+        {{ $maxCount := 1 }}
+        {{ range $tags }}
+        {{ if gt (len .) $maxCount }}{{ $maxCount = len . }}{{ end }}
+        {{ end }}
+
+        {{ range $name, $pages := $tags }}
+        {{ $count := len $pages }}
+        {{ $weight := div (mul $count 10) $maxCount }}
+        <a href="/tags/{{ $name | urlize }}/" class="tag-cloud-item" style="--tag-weight: {{ $weight }}"
+            aria-label="{{ $name }} – {{ $count }} notes">
+            <span>#{{ $name }}</span>
+            <span class="tag-count">{{ $count }}</span>
+        </a>
+        {{ else }}
+        <div class="empty-state">
+            <div class="empty-icon">🏷️</div>
+            <div class="empty-title">No tags yet</div>
+            <div class="empty-desc">Add tags to your notes to see them here.</div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}

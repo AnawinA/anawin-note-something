@@ -1,0 +1,468 @@
+/* ============================================================
+   ANAWIN NOTES – Content / Single Note
+   ============================================================ */
+
+.content-page {
+    padding: var(--space-8) 0 var(--space-16);
+
+    /* Note header card */
+    & .content-header {
+        margin-bottom: var(--space-8);
+        animation: fade-in-up 0.4s var(--ease-out-expo) both;
+    }
+
+    & .content-hero-img {
+        width: 100%;
+        max-height: 380px;
+        object-fit: cover;
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-8);
+        box-shadow: var(--shadow-lg);
+    }
+
+    & .content-img-placeholder {
+        width: 100%;
+        height: 240px;
+        background: linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3));
+        border-radius: var(--radius-lg);
+        display: none;
+        /* only show if no image */
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin-bottom: var(--space-8);
+
+        &.visible {
+            display: flex;
+        }
+    }
+
+    & .content-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-sm);
+        color: var(--color-muted);
+        margin-bottom: var(--space-4);
+
+        & a {
+            color: var(--color-muted);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--color-accent);
+            }
+        }
+    }
+
+    & .content-title {
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 800;
+        color: var(--color-text);
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        margin-bottom: var(--space-4);
+    }
+
+    & .content-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-6);
+        border-bottom: 1px solid var(--color-border);
+
+        & .meta-author {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text-2);
+
+            & .author-avatar {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: var(--font-size-xs);
+                font-weight: 800;
+                color: #fff;
+            }
+        }
+
+        & .meta-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        & .meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+    }
+}
+
+/* === PROSE CONTENT === */
+.prose {
+    max-width: 720px;
+    font-size: var(--font-size-lg);
+    line-height: 1.75;
+    color: var(--color-text);
+
+    /* Headings */
+    & h1,
+    & h2,
+    & h3,
+    & h4,
+    & h5,
+    & h6 {
+        color: var(--color-text);
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin-top: 2em;
+        margin-bottom: 0.6em;
+        line-height: 1.25;
+    }
+
+    & h1 {
+        font-size: 2rem;
+    }
+
+    & h2 {
+        font-size: 1.5rem;
+        padding-bottom: 0.4em;
+        border-bottom: 2px solid var(--color-border);
+    }
+
+    & h3 {
+        font-size: 1.25rem;
+    }
+
+    & h4 {
+        font-size: 1.1rem;
+    }
+
+    /* Paragraph */
+    & p {
+        margin-bottom: 1.4em;
+    }
+
+    /* Links */
+    & a {
+        color: var(--color-accent);
+        text-decoration: underline;
+        text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+        text-underline-offset: 3px;
+        transition: all var(--transition-fast);
+
+        &:hover {
+            text-decoration-color: var(--color-accent);
+        }
+    }
+
+    /* Lists */
+    & ul,
+    & ol {
+        margin: 0 0 1.4em 1.5em;
+        padding: 0;
+
+        & li {
+            margin-bottom: 0.4em;
+        }
+
+        & ul,
+        & ol {
+            margin-top: 0.4em;
+            margin-bottom: 0;
+        }
+    }
+
+    & ul {
+        list-style: disc;
+    }
+
+    & ol {
+        list-style: decimal;
+    }
+
+    /* Blockquote – modern style */
+    & blockquote {
+        position: relative;
+        margin: 1.8em 0;
+        padding: var(--space-5) var(--space-6);
+        background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+        border-left: 4px solid var(--color-accent);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-style: italic;
+        color: var(--color-text-2);
+
+        & p:last-child {
+            margin-bottom: 0;
+        }
+
+        &::before {
+            content: '"';
+            position: absolute;
+            top: -0.2em;
+            left: var(--space-4);
+            font-size: 4rem;
+            color: var(--color-accent);
+            opacity: 0.25;
+            font-style: normal;
+            line-height: 1;
+        }
+    }
+
+    /* Horizontal rule */
+    & hr {
+        border: none;
+        border-top: 1px solid var(--color-border);
+        margin: 2.5em 0;
+    }
+
+    /* Tables */
+    & table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.6em 0;
+        font-size: var(--font-size-sm);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--color-border);
+
+        & th {
+            background: var(--color-surface-2);
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
+            font-weight: 700;
+            color: var(--color-text);
+            font-size: var(--font-size-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        & td {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-2);
+        }
+
+        & tr:last-child td {
+            border-bottom: none;
+        }
+
+        & tr:nth-child(even) td {
+            background: var(--color-surface);
+        }
+
+        & tr:hover td {
+            background: color-mix(in srgb, var(--color-accent) 5%, var(--color-surface));
+        }
+    }
+
+    /* Inline code */
+    & code {
+        font-family: var(--font-mono);
+        font-size: 0.875em;
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        padding: 0.15em 0.45em;
+        color: var(--color-accent);
+    }
+
+    /* Code block */
+    & pre {
+        position: relative;
+        margin: 1.8em 0;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        background: #1e1e2e !important;
+        /* Catppuccin base */
+        border: 1px solid #313244;
+
+        & code {
+            display: block;
+            padding: var(--space-5);
+            background: none;
+            border: none;
+            border-radius: 0;
+            font-size: var(--font-size-sm);
+            color: #cdd6f4;
+            /* Catppuccin text */
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.7;
+        }
+
+        & .copy-btn {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            padding: var(--space-1) var(--space-3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            color: #a6adc8;
+            font-size: var(--font-size-xs);
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+            }
+
+            &.copied {
+                background: rgba(166, 227, 161, 0.2);
+                border-color: rgba(166, 227, 161, 0.4);
+                color: #a6e3a1;
+            }
+        }
+    }
+
+    /* Code language label */
+    & pre[data-lang]::after {
+        content: attr(data-lang);
+        position: absolute;
+        top: var(--space-3);
+        left: var(--space-4);
+        font-size: var(--font-size-xs);
+        font-family: var(--font-mono);
+        color: #585b70;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    /* Images */
+    & img {
+        border-radius: var(--radius);
+        margin: 1.6em auto;
+        box-shadow: var(--shadow);
+        max-width: 100%;
+    }
+
+    /* Image caption (alt text as caption via CSS) */
+    & figure {
+        margin: 1.6em 0;
+        text-align: center;
+
+        & figcaption {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted);
+            margin-top: var(--space-2);
+            font-style: italic;
+        }
+    }
+
+    /* Keyboard */
+    & kbd {
+        display: inline-block;
+        padding: 0.15em 0.5em;
+        font-family: var(--font-mono);
+        font-size: 0.8em;
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border);
+        border-bottom-width: 3px;
+        border-radius: var(--radius-sm);
+    }
+
+    /* Task list */
+    & input[type="checkbox"] {
+        accent-color: var(--color-accent);
+        margin-right: var(--space-2);
+    }
+
+    /* Strong / em */
+    & strong {
+        font-weight: 700;
+        color: var(--color-text);
+    }
+
+    & em {
+        font-style: italic;
+    }
+}
+
+/* Syntax highlighting – VS Code Dark+ palette via CSS */
+.prose pre code {
+
+    & .k,
+    & .kw {
+        color: #569cd6;
+    }
+
+    /* keywords */
+    & .s,
+    & .st {
+        color: #ce9178;
+    }
+
+    /* strings */
+    & .c,
+    & .cm {
+        color: #6a9955;
+    }
+
+    /* comments */
+    & .n,
+    & .nc {
+        color: #4ec9b0;
+    }
+
+    /* types/classes */
+    & .nf {
+        color: #dcdcaa;
+    }
+
+    /* functions */
+    & .mi,
+    & .m {
+        color: #b5cea8;
+    }
+
+    /* numbers */
+    & .kc {
+        color: #569cd6;
+    }
+
+    /* constants */
+    & .o {
+        color: #d4d4d4;
+    }
+
+    /* operators */
+    & .p {
+        color: #808080;
+    }
+
+    /* punctuation */
+    & .nt {
+        color: #4ec9b0;
+    }
+
+    /* tags */
+    & .na {
+        color: #9cdcfe;
+    }
+
+    /* attributes */
+    & .nv {
+        color: #9cdcfe;
+    }
+
+    /* variables */
+}

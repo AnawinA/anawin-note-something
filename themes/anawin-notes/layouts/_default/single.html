@@ -1,0 +1,84 @@
+{{ define "main" }}
+{{ $author := .Params.author | default .Site.Params.author }}
+{{ $initials := substr $author 0 1 | upper }}
+{{ $hasImage := .Params.image }}
+
+{{/* Content page meta tags for history.js */}}
+<meta name="note-url" content="{{ .RelPermalink }}" />
+<meta name="note-title" content="{{ .Title }}" />
+<meta name="note-date" content="{{ .Date.Format " 2006-01-02T15:04:05Z07:00" }}" />
+
+<div class="container content-page animate-fade-in-up">
+    <article>
+        {{/* Header */}}
+        <header class="content-header">
+            {{/* Breadcrumb */}}
+            <nav class="content-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                {{ if .Section }}
+                <span>›</span>
+                <a href="/notes/">Notes</a>
+                <span>›</span>
+                {{ if .Parent.Parent }}
+                <a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a>
+                <span>›</span>
+                {{ end }}
+                {{ .Section | title }}
+                {{ else }}
+                <span>›</span>
+                <a href="/notes/">Notes</a>
+                {{ end }}
+            </nav>
+
+            {{/* Hero image */}}
+            {{ if $hasImage }}
+            <img class="content-hero-img" src="{{ .Params.image | relURL }}" alt="{{ .Title }}" />
+            {{ else }}
+            <div class="content-img-placeholder visible">📝</div>
+            {{ end }}
+
+            {{/* Title */}}
+            <h1 class="content-title">{{ .Title }}</h1>
+
+            {{/* Meta row */}}
+            <div class="content-meta">
+                {{/* Author */}}
+                <div class="meta-author">
+                    <div class="author-avatar">{{ $initials }}</div>
+                    <span>{{ $author }}</span>
+                </div>
+
+                {{/* Date */}}
+                <div class="meta-date">
+                    <span>📅</span>
+                    <time datetime="{{ .Date.Format " 2006-01-02" }}">
+                        {{ dateFormat "January 2, 2006" .Date }}
+                    </time>
+                </div>
+
+                {{/* Folder */}}
+                {{ if .Section }}
+                <div class="meta-date">
+                    <span>📁</span>
+                    <span>{{ .Section | title }}</span>
+                </div>
+                {{ end }}
+
+                {{/* Tags */}}
+                {{ with .Params.tags }}
+                <div class="meta-tags">
+                    {{ range . }}
+                    <a href="/tags/{{ . | urlize }}/" class="tag-pill">🏷️ {{ . }}</a>
+                    {{ end }}
+                </div>
+                {{ end }}
+            </div>
+        </header>
+
+        {{/* Content */}}
+        <div class="prose">
+            {{ .Content }}
+        </div>
+    </article>
+</div>
+{{ end }}

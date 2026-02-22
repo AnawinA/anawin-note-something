@@ -1,0 +1,69 @@
+{{ define "main" }}
+{{/* Drafts page – only accessible via hugo server -D */}}
+{{ $drafts := where .Site.RegularPages "Draft" true }}
+
+<div class="container drafts-page animate-fade-in-up">
+    <div class="page-hero">
+        <h1 class="page-hero-title">
+            <span class="page-hero-icon">✏️</span>
+            Drafts
+            <span class="drafts-badge">Dev only</span>
+        </h1>
+        <p class="page-hero-desc">Notes marked <code>draft: true</code> — only visible here in dev mode.</p>
+    </div>
+
+    {{ if $drafts }}
+    <div id="notes-list-container" data-section-key="drafts">
+        <div class="notes-toolbar" style="margin-bottom:var(--space-6)">
+            <div class="toolbar-left">
+                <div class="view-toggle">
+                    <button data-view="gallery" class="active" title="Gallery">⊞</button>
+                    <button data-view="list" title="List">☰</button>
+                </div>
+                <div class="toolbar-divider"></div>
+                <div class="sort-group">
+                    <button data-sort="name">Name</button>
+                    <button data-sort="created" class="active">Created</button>
+                </div>
+                <button class="asc-btn desc" data-asc-toggle>↑</button>
+            </div>
+        </div>
+        <div class="notes-grid">
+            {{ range $drafts }}
+            <a href="{{ .RelPermalink }}" class="note-card" data-title="{{ .Title }}"
+                data-desc="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | truncate 120 }}{{ end }}"
+                data-date="{{ .Date.Format " 2006-01-02T15:04:05Z07:00" }}" data-tags="{{ delimit .Params.tags " ," }}"
+                data-url="{{ .RelPermalink }}">
+                <div class="note-card-img">
+                    {{ with .Params.image }}<img src="{{ . | relURL }}" alt="{{ $.Title }}" loading="lazy" />{{ else
+                    }}✏️{{ end }}
+                </div>
+                <div class="note-card-body">
+                    {{ if .Section }}<div class="note-card-folder">📁 {{ .Section }}</div>{{ end }}
+                    <div class="note-card-main">
+                        <div class="note-card-title">{{ .Title }}</div>
+                        <div class="note-card-desc">{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary |
+                            truncate 120 }}{{ end }}</div>
+                    </div>
+                    <div class="note-card-meta">
+                        <div class="note-card-date">{{ dateFormat "Jan 2, 2006" .Date }}</div>
+                        {{ with .Params.tags }}<div class="note-card-tags">{{ range first 3 . }}<span
+                                class="tag-pill">{{ . }}</span>{{ end }}</div>{{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+            <div class="load-sentinel"></div>
+        </div>
+    </div>
+    {{ else }}
+    <div class="empty-state">
+        <div class="empty-icon">✏️</div>
+        <div class="empty-title">No drafts found</div>
+        <div class="empty-desc">
+            All notes are published! Head to <a href="/notes/">Notes</a> to see them.
+        </div>
+    </div>
+    {{ end }}
+</div>
+{{ end }}

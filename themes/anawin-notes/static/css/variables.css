@@ -1,0 +1,99 @@
+/* ============================================================
+   ANAWIN NOTES – CSS Variables (Design Tokens)
+   ============================================================ */
+
+:root {
+  /* --- Palette --- */
+  --color-bg: #f7f7f5;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0efec;
+  --color-surface-3: #e8e7e3;
+  --color-text: #1c1c1c;
+  --color-text-2: #4a4a4a;
+  --color-muted: #8a8a8a;
+  --color-border: #e0dfd9;
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-accent-2: #10b981;
+  --color-danger: #ef4444;
+
+  /* --- Tag --- */
+  --color-tag-bg: #fef3c7;
+  --color-tag-text: #92400e;
+  --color-tag-border: #fde68a;
+
+  /* --- Typography --- */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  /* --- Spacing --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* --- Shape --- */
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  /* --- Navbar --- */
+  --nav-height: 72px;
+  --nav-height-compact: 52px;
+  --nav-bg: rgba(247, 247, 245, 0.88);
+  --nav-bg-compact: rgba(247, 247, 245, 0.95);
+  --nav-blur: blur(16px);
+
+  /* --- Animation --- */
+  --transition-fast: 0.15s ease;
+  --transition: 0.2s ease;
+  --transition-slow: 0.35s ease;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* === DARK MODE === */
+[data-theme="dark"] {
+  --color-bg: #131312;
+  --color-surface: #1e1e1c;
+  --color-surface-2: #252523;
+  --color-surface-3: #2d2d2a;
+  --color-text: #f0ede6;
+  --color-text-2: #b8b5ae;
+  --color-muted: #706d67;
+  --color-border: #2d2d2a;
+  --color-accent: #fbbf24;
+  --color-accent-hover: #f59e0b;
+  --color-tag-bg: #2a2010;
+  --color-tag-text: #fcd34d;
+  --color-tag-border: #403010;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --nav-bg: rgba(19, 19, 18, 0.88);
+  --nav-bg-compact: rgba(19, 19, 18, 0.96);
+}

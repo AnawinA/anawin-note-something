@@ -1,0 +1,8 @@
+name = "Anawin Notes"
+license = "MIT"
+licenselink = "https://opensource.org/licenses/MIT"
+description = "A clean, modern note-taking theme inspired by Apple Notes and Obsidian."
+homepage = "https://anawin-note-something.netlify.app/"
+tags = ["notes", "minimal", "dark-mode", "responsive"]
+features = ["notes", "tags", "search", "history", "dark-mode", "gallery"]
+min_version = "0.110.0"
