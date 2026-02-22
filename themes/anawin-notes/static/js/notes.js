@@ -16,6 +16,9 @@
         let allCards = []; // All note card elements (data-rich)
         let displayedCards = []; // Cards after filter/sort
         let chunkOffset = 0;
+        // MUST be declared before applySettings() → filterCards() uses it (TDZ guard)
+        let searchText = state.searchText || '';
+        let searchActive = false;
 
         // --- Elements ---
         const grid = container.querySelector('.notes-grid');
@@ -93,8 +96,6 @@
         });
 
         // Search toggle / input behavior
-        let searchText = state.searchText || '';
-        let searchActive = false;
 
         function openSearch() {
             searchActive = true;
