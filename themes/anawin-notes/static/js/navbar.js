@@ -40,10 +40,17 @@
         }
 
         // --- Active link highlight ---
+        // Links with ?mode= (Search, History) must match path + mode exactly.
+        // Plain links (Notes, Tags) match on pathname alone.
         const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+        const currentMode = new URLSearchParams(window.location.search).get('mode') || '';
+
         navbar.querySelectorAll('.nav-links a').forEach(link => {
-            const linkPath = new URL(link.href).pathname.replace(/\/$/, '') || '/';
-            if (linkPath === currentPath) {
+            const linkUrl = new URL(link.href);
+            const linkPath = linkUrl.pathname.replace(/\/$/, '') || '/';
+            const linkMode = linkUrl.searchParams.get('mode') || '';
+
+            if (linkPath === currentPath && linkMode === currentMode) {
                 link.classList.add('active');
             }
         });
