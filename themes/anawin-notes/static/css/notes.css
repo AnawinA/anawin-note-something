@@ -4,7 +4,7 @@
 
 /* === TOOLBAR === */
 .notes-page {
-    padding: var(--space-8) 0 var(--space-16);
+    padding: var(--space-8) var(--space-8) var(--space-16);
 
     & .notes-header {
         margin-bottom: var(--space-6);
