@@ -44,8 +44,7 @@
             {{ $count := len $pages }}
             <a class="tag-item" data-name="{{ $name }}" data-count="{{ $count }}" href="/tags/{{ $name | urlize }}/"
                 aria-label="{{ $name }} – {{ $count }} note{{ if ne $count 1 }}s{{ end }}">
-                <span class="tag-badge">#{{ $name }}</span>
-                <span class="tag-count">{{ $count }}</span>
+                <span class="tag-badge">#{{ $name }}<span class="tag-count">{{ $count }}</span></span>
             </a>
             {{ else }}
             <div class="empty-state">
