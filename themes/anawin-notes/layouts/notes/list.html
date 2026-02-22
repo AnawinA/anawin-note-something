@@ -1,21 +1,24 @@
+{{/*
+notes/list.html – Used for the /notes/ section index.
+Shows ALL regular pages site-wide (since notes live at content root,
+not inside content/notes/). Toolbar placed inside #notes-list-container
+so notes.js can find all controls.
+*/}}
 {{ define "main" }}
-{{ $sectionKey := printf "section-%s" .Section }}
+{{ $skip := slice "search" "history" "drafts" "notes" }}
+{{ $allPages := slice }}
+{{ range .Site.RegularPages }}
+{{ if not (in $skip .File.ContentBaseName) }}
+{{ $allPages = $allPages | append . }}
+{{ end }}
+{{ end }}
 
 <div class="container notes-page animate-fade-in-up">
-
-    {{/* #notes-list-container wraps toolbar + grid so notes.js can find everything */}}
-    <div id="notes-list-container" data-section-key="{{ $sectionKey }}">
+    <div id="notes-list-container" data-section-key="notes-all">
 
         <div class="notes-header">
-            {{ if .Parent.Parent }}
-            <nav class="content-breadcrumb" aria-label="Breadcrumb">
-                <a href="/">Home</a><span>›</span>
-                <a href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a><span>›</span>
-                {{ .Title }}
-            </nav>
-            {{ end }}
-            <h1 class="notes-title">📁 {{ .Title }}</h1>
-            <div class="notes-count">{{ len .Pages }} note{{ if ne (len .Pages) 1 }}s{{ end }}</div>
+            <h1 class="notes-title">📝 Notes</h1>
+            <div class="notes-count">{{ len $allPages }} note{{ if ne (len $allPages) 1 }}s{{ end }}</div>
         </div>
 
         <div class="notes-toolbar">
@@ -47,7 +50,7 @@
                     <button class="search-btn">🔍 Search</button>
                     <div class="search-input-wrap">
                         <span class="search-icon">🔍</span>
-                        <input type="text" placeholder="Search…" aria-label="Search notes" />
+                        <input type="text" placeholder="Search notes…" aria-label="Search notes" />
                         <div class="search-options">
                             <button data-whole-word title="Whole words">W</button>
                             <button data-match-case title="Match case">Aa</button>
@@ -59,7 +62,7 @@
         </div>
 
         <div class="notes-grid">
-            {{ range .Pages }}
+            {{ range $allPages }}
             <a href="{{ .RelPermalink }}" class="note-card" data-title="{{ .Title }}"
                 data-desc="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | truncate 120 }}{{ end }}"
                 data-date="{{ .Date.Format " 2006-01-02T15:04:05Z07:00" }}" data-tags="{{ delimit .Params.tags " ," }}"
@@ -84,8 +87,9 @@
             </a>
             {{ else }}
             <div class="empty-state">
-                <div class="empty-icon">📁</div>
-                <div class="empty-title">No notes in this section</div>
+                <div class="empty-icon">🗒️</div>
+                <div class="empty-title">No notes yet</div>
+                <div class="empty-desc">Create your first note with <code>hugo new my-note.md</code></div>
             </div>
             {{ end }}
             <div class="load-sentinel"></div>

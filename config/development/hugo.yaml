@@ -1,0 +1,5 @@
+# Development environment config overlay
+# Loaded automatically by `hugo server` (development env)
+# NOT loaded during `hugo` production builds
+params:
+  devMode: true

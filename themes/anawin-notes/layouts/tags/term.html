@@ -1,62 +1,61 @@
 {{ define "main" }}
-{{/* Single tag – reuses notes list with tag filter applied */}}
 {{ $sectionKey := printf "tag-%s" (.Data.Term | urlize) }}
 
 <div class="container notes-page animate-fade-in-up">
-    <div class="notes-header">
-        <div class="notes-breadcrumb">
-            <a href="/">Home</a>
-            <span class="sep">›</span>
-            <a href="/tags/">Tags</a>
-            <span class="sep">›</span>
-            #{{ .Data.Term }}
-        </div>
-        <h1 class="notes-title">🏷️ #{{ .Data.Term }}</h1>
-        <div class="notes-count">{{ len .Pages }} note{{ if ne (len .Pages) 1 }}s{{ end }}</div>
-    </div>
 
-    {{/* Same toolbar as list.html */}}
-    <div class="notes-toolbar">
-        <div class="toolbar-left">
-            <div class="view-toggle">
-                <button data-view="gallery" class="active" title="Gallery">⊞</button>
-                <button data-view="list" title="List">☰</button>
-            </div>
-            <div class="toolbar-divider"></div>
-            <div class="sort-group">
-                <button data-sort="name">Name</button>
-                <button data-sort="created" class="active">Created</button>
-                <button data-sort="watched">Watched</button>
-            </div>
-            <button class="asc-btn desc" data-asc-toggle>↑</button>
-            <div class="toolbar-divider"></div>
-            <div class="label-toggle-wrap" data-label-toggle>
-                <span>Label</span>
-                <div class="toggle"></div>
-            </div>
+    {{/* #notes-list-container wraps toolbar + grid so notes.js can find everything */}}
+    <div id="notes-list-container" data-section-key="{{ $sectionKey }}">
+
+        <div class="notes-header">
+            <nav class="content-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a><span>›</span>
+                <a href="/tags/">Tags</a><span>›</span>
+                #{{ .Data.Term }}
+            </nav>
+            <h1 class="notes-title">🏷️ #{{ .Data.Term }}</h1>
+            <div class="notes-count">{{ len .Pages }} note{{ if ne (len .Pages) 1 }}s{{ end }}</div>
         </div>
-        <div class="toolbar-right">
-            <div class="size-range">
-                <span>🔲</span>
-                <input type="range" data-size-range min="140" max="400" value="220" />
-                <span>🔳</span>
+
+        <div class="notes-toolbar">
+            <div class="toolbar-left">
+                <div class="view-toggle">
+                    <button data-view="gallery" title="Gallery">⊞</button>
+                    <button data-view="list" title="List">☰</button>
+                </div>
+                <div class="toolbar-divider"></div>
+                <div class="sort-group">
+                    <button data-sort="name">Name</button>
+                    <button data-sort="created">Created</button>
+                    <button data-sort="watched">Watched</button>
+                </div>
+                <button class="asc-btn" data-asc-toggle aria-label="Toggle order">↑</button>
+                <div class="toolbar-divider"></div>
+                <div class="label-toggle-wrap" data-label-toggle>
+                    <span>Label</span>
+                    <div class="toggle" role="switch" aria-checked="false"></div>
+                </div>
             </div>
-            <div class="search-toggle-wrap">
-                <button class="search-btn">🔍 Search</button>
-                <div class="search-input-wrap">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Search in #{{ .Data.Term }}…" />
-                    <div class="search-options">
-                        <button data-whole-word title="Whole words">W</button>
-                        <button data-match-case title="Match case">Aa</button>
+            <div class="toolbar-right">
+                <div class="size-range">
+                    <span title="Smaller">▫</span>
+                    <input type="range" data-size-range min="140" max="400" value="220" aria-label="Card size" />
+                    <span title="Larger">▪</span>
+                </div>
+                <div class="search-toggle-wrap">
+                    <button class="search-btn">🔍 Search</button>
+                    <div class="search-input-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search in #{{ .Data.Term }}…" aria-label="Search notes" />
+                        <div class="search-options">
+                            <button data-whole-word title="Whole words">W</button>
+                            <button data-match-case title="Match case">Aa</button>
+                        </div>
+                        <button class="search-clear">✕</button>
                     </div>
-                    <button class="search-clear">✕</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="notes-list-container" data-section-key="{{ $sectionKey }}">
         <div class="notes-grid">
             {{ range .Pages }}
             <a href="{{ .RelPermalink }}" class="note-card" data-title="{{ .Title }}"
@@ -89,6 +88,7 @@
             {{ end }}
             <div class="load-sentinel"></div>
         </div>
-    </div>
+
+    </div>{{/* end #notes-list-container */}}
 </div>
 {{ end }}

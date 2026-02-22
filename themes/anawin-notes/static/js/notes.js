@@ -142,6 +142,25 @@
         wholeWordBtn?.addEventListener('click', () => toggleSearchOpt(wholeWordBtn, 'wholeWord'));
         matchCaseBtn?.addEventListener('click', () => toggleSearchOpt(matchCaseBtn, 'matchCase'));
 
+        // Clear search
+        const clearBtn = searchInputWrap?.querySelector('.search-clear');
+        clearBtn?.addEventListener('click', () => {
+            searchText = '';
+            state.searchText = '';
+            if (searchInput) searchInput.value = '';
+            filterAndRender();
+            saveSettings();
+            closeSearch();
+        });
+
+        // Auto-open search if ?q= in URL
+        const urlQ = new URLSearchParams(location.search).get('q');
+        if (urlQ) {
+            searchText = urlQ;
+            state.searchText = urlQ;
+            openSearch();
+        }
+
         // Chunk loading via IntersectionObserver
         if (sentinel) {
             const io = new IntersectionObserver(entries => {
